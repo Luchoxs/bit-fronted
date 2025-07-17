@@ -1,0 +1,239 @@
+<!-- src/app/components/incident/list/list.html -->
+<div class="container mt-4">
+  <h2>Incidentes Viales</h2>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <button 
+      class="btn btn-primary mb-3" 
+      (click)="abrirModalNuevo()">
+      <i class="bi bi-plus-circle"></i> Nuevo Incidente
+    </button>
+    </div>
+    <div class="d-flex gap-2">
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="filtro"
+        placeholder="Buscar..."
+      />
+      <select
+        class="form-select"
+        [(ngModel)]="tipoFiltro"
+        (change)="aplicarFiltros()"
+      >
+        <option value="">Todos los tipos</option>
+        <option value="accidente">Accidente</option>
+        <option value="desvio">Desvío</option>
+        <option value="reparacion">Reparación</option>
+        <option value="mantenimiento">Mantenimiento</option>
+        <option value="obras">Obras</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+
+  <div
+    *ngIf="!loading && !error && incidentes.length === 0"
+    class="alert alert-info"
+  >
+    No se encontraron incidentes
+  </div>
+
+  <div class="table-responsive" *ngIf="incidentes.length > 0">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Dirección</th>
+          <th>Ciudad</th>
+          <th>Gravedad</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let incidente of incidentesFiltrados">
+          <td>{{incidente.tipo}}</td>
+          <td>{{incidente.direccion}}</td>
+          <td>{{incidente.ciudad}}</td>
+          <td>
+            <span [class]="getGravedadClass(incidente.nivel_gravedad)">
+              {{incidente.nivel_gravedad}}
+            </span>
+          </td>
+          <td>{{incidente.estado}}</td>
+          <td>{{incidente.fecha_hora | date:'medium'}}</td>
+          <td>
+            <button
+              class="btn btn-sm btn-primary me-1"
+              (click)="verDetalles(incidente)"
+            >
+              <i class="bi bi-eye"></i>
+            </button>
+            <button
+              class="btn btn-sm btn-warning me-1"
+              (click)="editarIncidente(incidente)"
+            >
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="eliminarIncidente(incidente)"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div #editModal class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">
+          {{currentIncidente ? 'Editar' : 'Nuevo'}} Incidente
+        </h5>
+        <button type="button" class="btn-close" 
+                data-bs-dismiss="modal" 
+                aria-label="Close"
+                (click)="onModalClose()">
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="incidentForm" (ngSubmit)="onSubmit()">
+          <!-- Spinner de carga -->
+          <div class="loading-spinner" *ngIf="loading">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Guardando...</span>
+            </div>
+          </div>
+
+          <!-- Formulario -->
+          <div *ngIf="!loading">
+            <div class="mb-3">
+              <label class="form-label">Tipo</label>
+              <select class="form-select" formControlName="tipo">
+                <option value="">Seleccionar tipo</option>
+                <option value="accidente">Accidente</option>
+                <option value="desvio">Desvío</option>
+                <option value="reparacion">Reparación</option>
+                <option value="mantenimiento">Mantenimiento</option>
+                <option value="obras">Obras</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Dirección</label>
+              <input type="text" 
+                     class="form-control" 
+                     formControlName="direccion" 
+                     placeholder="Calle o avenida">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Ciudad</label>
+              <input type="text" 
+                     class="form-control" 
+                     formControlName="ciudad" 
+                     placeholder="Ciudad">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Descripción</label>
+              <textarea class="form-control" 
+                        formControlName="descripcion" 
+                        rows="3"
+                        placeholder="Descripción detallada del incidente"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Nivel de Gravedad</label>
+              <select class="form-select" formControlName="nivel_gravedad">
+                <option value="bajo">Bajo</option>
+                <option value="medio">Medio</option>
+                <option value="alto">Alto</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Link de Imagen</label>
+              <input type="text" 
+                     class="form-control" 
+                     formControlName="imagen" 
+                     placeholder="URL de la imagen">
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" 
+                      class="btn btn-primary" 
+                      [disabled]="!incidentForm.valid">
+                {{currentIncidente ? 'Actualizar' : 'Crear'}} Incidente
+              </button>
+              <button type="button" 
+                      class="btn btn-secondary ms-2" 
+                      data-bs-dismiss="modal" 
+                      (click)="onModalClose()">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Detalles -->
+<div #detailModal class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailModalLabel">Detalles del Incidente</h5>
+        <button type="button" class="btn-close" 
+                data-bs-dismiss="modal" 
+                aria-label="Close"
+                (click)="onModalClose()">
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <h6>Descripción:</h6>
+            <p>{{currentDetailIncidente?.descripcion}}</p>
+            
+            <div *ngIf="currentDetailIncidente?.imagen" class="mt-4">
+              <h6>Link de Imagen:</h6>
+              <div class="link-container">
+                <a [href]="currentDetailIncidente?.imagen" 
+                   target="_blank" 
+                   class="text-decoration-none">
+                  {{currentDetailIncidente?.imagen}}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" 
+                class="btn btn-secondary" 
+                data-bs-dismiss="modal"
+                (click)="onModalClose()">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

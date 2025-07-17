@@ -1,0 +1,113 @@
+/* src/app/components/incident/list/list.css */
+.table {
+    background-color: white;
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .gravedad-alto {
+    color: #dc3545;
+    font-weight: bold;
+  }
+  
+  .gravedad-medio {
+    color: #ffc107;
+    font-weight: bold;
+  }
+  
+  .gravedad-bajo {
+    color: #28a745;
+    font-weight: bold;
+  }
+  
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .bi {
+    font-size: 1rem;
+  }
+
+  
+  .modal-content {
+    border-radius: 10px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+  
+  .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .modal-title {
+    font-weight: 600;
+  }
+
+  /* Estilos para el modal de edicion */
+.modal-content {
+  border-radius: 10px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+/* Estilos para el modal de detalles */
+.modal-dialog.modal-lg {
+  max-width: 950px;  /* Aumentamos el ancho máximo */
+}
+
+.modal-content {
+  margin: 1.75rem auto;
+  max-width: 950px;  /* Aseguramos que el contenido no supere el ancho del modal */
+  width: 95%;
+}
+
+/* Estilos específicos para el link de imagen */
+.link-container {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-wrap: break-word;  /* Asegura que el texto se rompa en palabras */
+  word-break: break-all;      /* Asegura que el texto no se salga del contenedor */
+}
+
+.link-container a {
+  color: #007bff;
+  text-decoration: none;
+  display: block;
+  padding: 0.5rem;
+  background-color: #fff;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.link-container a:hover {
+  background-color: #f8f9fa;
+  color: #0056b3;
+}
+
+/* Ajuste para el modal de detalles */
+.modal-body {
+  padding: 2rem;
+}
+
+/* Aseguramos que el contenido del modal sea scrollable si es necesario */
+.modal-body {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
