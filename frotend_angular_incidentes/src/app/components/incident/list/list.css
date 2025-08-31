@@ -1,4 +1,7 @@
 /* src/app/components/incident/list/list.css */
+.container {
+    margin-top: 2rem;
+}
 .table {
     background-color: white;
   }

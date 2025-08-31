@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/envimonmet';
 import { Incident } from '../../../models/incident.model';
+import Swal from 'sweetalert2';
 
 declare var bootstrap: any;
 
@@ -235,12 +236,22 @@ export class ListComponent implements OnInit, AfterViewInit {
               this.incidentesFiltrados[index] = { ...this.currentIncidente, ...incidenteData };
               this.aplicarFiltros();
             }
-            alert('Incidente actualizado correctamente');
+            Swal.fire({
+              title: 'Éxito',
+              text: 'Incidente actualizado correctamente',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            });
             this.onModalClose();
           },
           error: (error) => {
             console.error('Error al actualizar:', error);
-            alert('Error al actualizar el incidente');
+            Swal.fire({
+              title: 'Error',
+              text: 'Error al actualizar el incidente',
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
           }
         });
       } else {
@@ -253,17 +264,32 @@ export class ListComponent implements OnInit, AfterViewInit {
             this.incidentes = [...this.incidentes, response];
             this.incidentesFiltrados = [...this.incidentesFiltrados, response];
             this.aplicarFiltros();
-            alert('Incidente creado exitosamente');
+            Swal.fire({
+              title: 'Éxito',
+              text: 'Incidente creado exitosamente',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            });
             this.onModalClose();
           },
           error: (error) => {
             console.error('Error al crear:', error);
-            alert('Error al crear el incidente');
+            Swal.fire({
+              title: 'Error',
+              text: 'Error al crear el incidente',
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
           }
         });
       }
     } else {
-      alert('Por favor, complete todos los campos obligatorios');
+      Swal.fire({
+        title: 'Error',
+        text: 'Por favor, complete todos los campos obligatorios',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      });
     }
   }
 
@@ -279,21 +305,41 @@ export class ListComponent implements OnInit, AfterViewInit {
   }
 
   eliminarIncidente(incidente: Incident) {
-    if (confirm('¿Estás seguro de eliminar este incidente?')) {
-      this.http.delete<void>(`${environment.apiUrl}/api/incidentes/${incidente._id}`)
-        .subscribe({
-          next: () => {
-            this.incidentes = this.incidentes.filter(i => i?._id !== incidente._id);
-            this.aplicarFiltros();
-          },
-          error: (error) => {
-            this.loading = false;
-            this.error = 'Error al eliminar el incidente';
-            console.error('Error:', error);
-            alert('Error al eliminar el incidente. Por favor, inténtelo de nuevo.');
-          }
-        });
-    }
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.http.delete<void>(`${environment.apiUrl}/api/incidentes/${incidente._id}`)
+          .subscribe({
+            next: () => {
+              this.incidentes = this.incidentes.filter(i => i?._id !== incidente._id);
+              this.aplicarFiltros();
+              Swal.fire({
+                title: 'Éxito',
+                text: 'Incidente eliminado correctamente',
+                icon: 'success',
+                confirmButtonText: 'OK'
+              });
+            },
+            error: (error) => {
+              console.error('Error al eliminar:', error);
+              Swal.fire({
+                title: 'Error',
+                text: 'Error al eliminar el incidente',
+                icon: 'error',
+                confirmButtonText: 'OK'
+              });
+            }
+          });
+      }
+    });
   }
   
 }

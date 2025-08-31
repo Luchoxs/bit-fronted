@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NavbarComponent } from './components/shared/navbar/navbar';
+
 
 @Component({
   selector: 'app-root',
@@ -10,7 +12,9 @@ import { FormsModule } from '@angular/forms';
   imports: [
     RouterOutlet,
     CommonModule,
-    FormsModule
+    FormsModule,
+    NavbarComponent,
+
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

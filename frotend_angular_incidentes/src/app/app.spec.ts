@@ -1,23 +1,59 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { App } from './app';
+import { NavbarComponent } from './components/shared/navbar/navbar';
+import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideZoneChangeDetection } from '@angular/core';
 
-describe('App', () => {
+describe('AppComponent', () => {
+  let component: App;
+  let fixture: ComponentFixture<App>;
+  let compiled: HTMLElement;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App],
+      imports: [
+        App,
+        RouterTestingModule,
+        NavbarComponent
+      ],
+      providers: [
+        provideHttpClient(),
+        provideZoneChangeDetection({ eventCoalescing: true })
+      ]
     }).compileComponents();
-  });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(App);
+    fixture = TestBed.createComponent(App);
+    component = fixture.componentInstance;
+    compiled = fixture.nativeElement as HTMLElement;
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, frotend_angular_incidentes');
+  });
+
+  afterEach(() => {
+    fixture.destroy();
+  });
+
+  it('debería crear la aplicación correctamente', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('debería contener el componente navbar', () => {
+    const navbar = compiled.querySelector('app-navbar');
+    expect(navbar).toBeTruthy();
+  });
+
+  it('debería contener un router-outlet', () => {
+    const routerOutlet = compiled.querySelector('router-outlet');
+    expect(routerOutlet).toBeTruthy();
+  });
+
+  it('debería tener la estructura principal correcta', () => {
+    const mainContent = compiled.querySelector('.main-content');
+    expect(mainContent).toBeTruthy();
+    
+    if (mainContent) {
+      const routerOutlet = mainContent.querySelector('router-outlet');
+      expect(routerOutlet).toBeTruthy();
+    }
   });
 });
